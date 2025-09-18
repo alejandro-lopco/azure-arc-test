@@ -1,0 +1,19 @@
+# Ficheros de estado de Terraform
+*.tfstate
+*.tfstate.backup
+*.backup
+*.tfplan
+.terraform.tfstate.lock.info
+# Directorio .terraform 
+.terraform/
+*.tfvars
+# Terraform CLI config
+.terraformrc
+.terraform.lock.hcl
+terraform.rc
+# Ficheros de terraform plan 
+*.tfout
+# SSH
+*.pem
+# Misc
+.to-do.md
