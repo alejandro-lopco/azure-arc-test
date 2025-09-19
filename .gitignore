@@ -15,5 +15,6 @@ terraform.rc
 *.tfout
 # SSH
 *.pem
+*.pub
 # Misc
 .to-do.md

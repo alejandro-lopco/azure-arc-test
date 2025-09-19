@@ -17,7 +17,7 @@ az provider show -n Microsoft.Kubernetes -o table
 az provider show -n Microsoft.KubernetesConfiguration -o table
 az provider show -n Microsoft.ExtendedLocation -o table
 
-# Instalamos golang y kind para preparar el cluster
+# Instalamos kind para preparar el cluster
 go install sigs.k8s.io/kind@latest
 
 # Creamos el cluster 
@@ -28,6 +28,15 @@ kind create cluster --name arc-kind --config kind.yaml --kubeconfig kind-config
 # Conectamos con azure 
 az connectedk8s connect --name arc-kind --resource-group ${resource_group} --kube-config ${working_dir}/kind-config
 
+# Creación de service account y token para visualizar los recursos en Azure Portal
+kubectl create serviceaccount azure-portal-access -n default
+kubectl create clusterrolebinding azure-portal-access-binding --clusterrole=cluster-admin --serviceaccount=default:azure-portal-access
+TOKEN=$(kubectl create token azure-portal-access --namespace default --duration 24h)
+kubectl config set-credentials service-account-user --token="$TOKEN"
+kubectl config set-context --current --user=service-account-user
+
 # Comprocaciones finales
 kubectl get deployments,pods -n azure-arc
 az connectedk8s list --resource-group ${resource_group} --output table
+echo $TOKEN > token.txt
+echo "Token: $(cat token.txt)"

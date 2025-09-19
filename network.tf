@@ -38,7 +38,7 @@ resource "azurerm_network_security_group" "this" {
 
   security_rule {
     name                       = "SSH"
-    priority                   = 1001
+    priority                   = 1010
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -49,7 +49,7 @@ resource "azurerm_network_security_group" "this" {
   }
   security_rule {
     name                       = "HTTP"
-    priority                   = 1002
+    priority                   = 1020
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -59,24 +59,24 @@ resource "azurerm_network_security_group" "this" {
     destination_address_prefix = "*"
   }
   security_rule {
-    name                       = "HTTP"
-    priority                   = 1003
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "81"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-  security_rule {
     name                       = "HTTPS"
-    priority                   = 1004
+    priority                   = 1030
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+    security_rule {
+    name                       = "Kube"
+    priority                   = 1030
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8080"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -90,4 +90,15 @@ resource "azurerm_network_interface_security_group_association" "this" {
 resource "tls_private_key" "this" {
   algorithm = "RSA"
   rsa_bits  = 4096
+}
+
+resource "local_file" "private_key_pem" {
+  filename        = "private_key.pem"
+  content         = tls_private_key.this.private_key_pem
+  file_permission = "0400"
+}
+
+resource "local_file" "public_key" {
+    filename = "public_key.pub"
+    content  = tls_private_key.this.public_key_openssh
 }

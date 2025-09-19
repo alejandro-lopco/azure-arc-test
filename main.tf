@@ -68,10 +68,11 @@ resource "azurerm_arc_kubernetes_cluster" "this" {
   }
 
   connection {
-    type     = "ssh"
-    host     = azurerm_public_ip.this.ip_address
-    user     = var.user_name
-    password = var.password
+    type        = "ssh"
+    host        = azurerm_public_ip.this.ip_address
+    user        = var.user_name
+    password    = var.password
+    private_key = tls_private_key.this.private_key_pem
   }
 
   provisioner "file" {
